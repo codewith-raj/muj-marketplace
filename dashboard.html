@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MUJ Marketplace - Dashboard for buying and selling campus items">
+    <title>Dashboard - MUJ Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="css/navbar.css" rel="stylesheet">
+</head>
+
+<body class="flex">
+    <!-- Toast notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar flex-shrink-0 text-white">
+        <div class="p-6 flex items-center space-x-3">
+            <img class="h-10"
+                src="https://www.onlinemanipal.com/wp-content/uploads/2022/07/MicrosoftTeams-image-9.png.webp"
+                alt="MUJ Logo">
+            <span class="text-xl font-bold">MUJ-Marketplace</span>
+        </div>
+
+        <nav class="mt-6 px-4">
+            <div class="space-y-1">
+                <a href="#" class="nav-link active flex items-center px-4 py-3 rounded-lg" data-page="dashboard">
+                    <i class="fas fa-home nav-icon w-6"></i>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 rounded-lg" data-page="marketplace">
+                    <i class="fas fa-store nav-icon w-6"></i>
+                    <span class="ml-3">Marketplace</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-page="sell">
+                    <i class="fas fa-plus-circle nav-icon w-6"></i>
+                    <span class="ml-3">Sell Item</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-page="purchases">
+                    <i class="fas fa-shopping-bag nav-icon w-6"></i>
+                    <span class="ml-3">My Purchases</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-page="messages">
+                    <i class="fas fa-comments nav-icon w-6"></i>
+                    <span class="ml-3">Messages</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg" data-page="profile">
+                    <i class="fas fa-user nav-icon w-6"></i>
+                    <span class="ml-3">Profile</span>
+                </a>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <div class="px-4">
+                    <div class="flex items-center">
+                        <img class="w-10 h-10 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg"
+                            alt="User avatar">
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Ritik raj</p>
+                            <p class="text-xs text-gray-400">ITE-2rd Year</p>
+                        </div>
+                    </div>
+                    <button id="signOutBtn"
+                        class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-600">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Sign out
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Mobile sidebar overlay -->
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top navigation -->
+        <header class="bg-white shadow-sm z-10">
+            <div class="px-6 py-3 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="mobileMenuButton" class="lg:hidden text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="ml-4 text-xl font-semibold text-gray-900" id="pageTitle">Dashboard</h1>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="searchButton" class="p-2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div id="searchBox"
+                            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+                            <input type="text" placeholder="Search marketplace..." id="searchInput"
+                                class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                            <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg"
+                                alt="User avatar">
+                            <span class="hidden md:inline-block font-medium">Ritik raj</span>
+                        </button>
+
+                        <div id="userMenu"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 dropdown-menu">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                data-page="profile">
+                                <i class="fas fa-user mr-2"></i> Profile
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                data-page="settings">
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                            <div class="border-t border-gray-200"></div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                id="signOutBtn2">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Sign out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50" id="mainContent">
+            <!-- Dashboard content -->
+            <div id="dashboardContent">
+                <!-- Welcome banner -->
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-md p-6 text-white mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold">Welcome back, Raj!</h2>
+                            <p class="mt-2 opacity-90">Check out the latest items in the marketplace or list something
+                                new to sell.</p>
+                        </div>
+                        <button id="sellItemBtn"
+                            class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-purple-600 bg-white hover:bg-gray-50">
+                            <i class="fas fa-plus mr-2"></i> Sell an Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6" id="statsCards">
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-store text-lg"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Active Listings</p>
+                                <p class="text-2xl font-semibold" id="activeListingsCount">3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-shopping-bag text-lg"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Items Sold</p>
+                                <p class="text-2xl font-semibold" id="soldItemsCount">5</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-wallet text-lg"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Earnings</p>
+                                <p class="text-2xl font-semibold" id="totalEarnings">₹12,500</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-star text-lg"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Your Rating</p>
+                                <p class="text-2xl font-semibold">4.8</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent activity and popular items -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Recent activity -->
+                    <div class="lg:col-span-2">
+                        <div class="card bg-white rounded-lg overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
+                            </div>
+                            <div class="divide-y divide-gray-200" id="recentActivity">
+                                <div class="p-6">
+                                    <div class="flex items-start">
+                                        <img class="w-10 h-10 rounded-full"
+                                            src="https://randomuser.me/api/portraits/men/44.jpg" alt="User avatar">
+                                        <div class="ml-4">
+                                            <div class="flex items-center">
+                                                <p class="text-sm font-medium">dhruv</p>
+                                                <span class="ml-2 text-xs text-gray-500">2 hours ago</span>
+                                            </div>
+                                            <p class="mt-1 text-sm text-gray-600">Purchased your "Calculus Textbook" for
+                                                ₹500</p>
+                                            <div class="mt-2 flex space-x-2">
+                                                <button
+                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-xs font-medium bg-white text-gray-700 hover:bg-gray-50"
+                                                    onclick="startNewMessage('Sarah Johnson')">
+                                                    <i class="fas fa-comment mr-1"></i> Message
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex items-start">
+                                        <img class="w-10 h-10 rounded-full"
+                                            src="https://randomuser.me/api/portraits/men/22.jpg" alt="User avatar">
+                                        <div class="ml-4">
+                                            <div class="flex items-center">
+                                                <p class="text-sm font-medium">Rahul Sharma</p>
+                                                <span class="ml-2 text-xs text-gray-500">5 hours ago</span>
+                                            </div>
+                                            <p class="mt-1 text-sm text-gray-600">Sent you a message about "scientific
+                                                Calculator"</p>
+                                            <div class="mt-2">
+                                                <button
+                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-xs font-medium bg-white text-gray-700 hover:bg-gray-50"
+                                                    onclick="startNewMessage('Rahul Sharma')">
+                                                    <i class="fas fa-comment mr-1"></i> View Message
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular items -->
+                    <div>
+                        <div class="card bg-white rounded-lg overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-medium text-gray-900">Popular in Campus</h3>
+                            </div>
+                            <div class="divide-y divide-gray-200" id="popularItems">
+                                <a href="#" class="block p-6 hover:bg-gray-50" onclick="showItemModal(event, 1)">
+                                    <div class="flex items-start">
+                                        <img class="w-16 h-16 rounded-md object-cover"
+                                            src="https://m.media-amazon.com/images/I/41SH-SvWPxL.jpg" alt="Textbook">
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium">Data Structures Textbook</p>
+                                            <p class="mt-1 text-sm text-gray-600">₹600</p>
+                                            <div class="mt-2 flex items-center">
+                                                <div class="flex items-center text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-500">(12)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="#" class="block p-6 hover:bg-gray-50" onclick="showItemModal(event, 2)">
+                                    <div class="flex items-start">
+                                        <img class="w-16 h-16 rounded-md object-cover"
+                                            src="https://m.media-amazon.com/images/I/61L5QgPvgLL._AC_UF1000,1000_QL80_.jpg"
+                                            alt="Calculator">
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium">Scientific Calculator</p>
+                                            <p class="mt-1 text-sm text-gray-600">₹800</p>
+                                            <div class="mt-2 flex items-center">
+                                                <div class="flex items-center text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="far fa-star"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-500">(8)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Your listings -->
+                <div class="mt-6">
+                    <div class="card bg-white rounded-lg overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900">Your Listings</h3>
+                            <button id="addListingBtn"
+                                class="btn-primary inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white">
+                                <i class="fas fa-plus mr-2"></i> Add New
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Item</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Price</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date Posted</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" id="listingsTableBody">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-md"
+                                                    src="https://cdn.moglix.com/p/SSJFvINidjSnR-xxlarge.jpg"
+                                                    alt="Calculator">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Scientific Calculator
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹800</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 day ago</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button class="text-purple-600 hover:text-purple-900 mr-3"
+                                            onclick="editListing(2)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900" onclick="deleteListing(2)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketplace content (hidden by default) -->
+            <div id="marketplaceContent" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Marketplace</h2>
+                    <div class="flex space-x-4">
+                        <div class="relative">
+                            <select id="categoryFilter"
+                                class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">All Categories</option>
+                                <option value="textbooks">Textbooks</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="furniture">Furniture</option>
+                                <option value="clothing">Clothing</option>
+                            </select>
+                        </div>
+                        <div class="relative">
+                            <select id="sortBy"
+                                class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="marketplaceItems">
+                    <div class="card bg-white rounded-lg overflow-hidden hover:shadow-md transition">
+                        <div class="relative">
+                            <img src="https://m.media-amazon.com/images/I/41SH-SvWPxL.jpg" alt="Textbook"
+                                class="w-full h-48 object-cover">
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">Data Structures Textbook</h3>
+                                <span class="text-lg font-semibold text-purple-600">₹600</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">Textbooks</p>
+                            <div class="flex items-center mb-3">
+                                <div class="flex items-center text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="ml-1 text-xs text-gray-500">(12)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Seller"
+                                        class="h-6 w-6 rounded-full mr-2">
+                                    <span class="text-xs text-gray-600">Rahul Sharma</span>
+                                </div>
+                                <button onclick="showItemModal(event, 1)"
+                                    class="text-sm text-purple-600 hover:text-purple-500 font-medium">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-white rounded-lg overflow-hidden hover:shadow-md transition">
+                        <div class="relative">
+                            <img src="https://m.media-amazon.com/images/I/61L5QgPvgLL._AC_UF1000,1000_QL80_.jpg"
+                                alt="Calculator" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">Scientific Calculator</h3>
+                                <span class="text-lg font-semibold text-purple-600">₹800</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-2">Electronics</p>
+                            <div class="flex items-center mb-3">
+                                <div class="flex items-center text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="ml-1 text-xs text-gray-500">(8)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Seller"
+                                        class="h-6 w-6 rounded-full mr-2">
+                                    <span class="text-xs text-gray-600">Priya Patel</span>
+                                </div>
+                                <button onclick="showItemModal(event, 2)"
+                                    class="text-sm text-purple-600 hover:text-purple-500 font-medium">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sell Item content (hidden by default) -->
+            <div id="sellContent" class="hidden max-w-3xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-6">List an Item for Sale</h2>
+
+                    <form id="sellItemForm">
+                        <div class="mb-6">
+                            <label for="itemTitle" class="block text-sm font-medium text-gray-700 mb-1">Item
+                                Title</label>
+                            <input type="text" id="itemTitle" name="itemTitle" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="itemDescription"
+                                class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="itemDescription" name="itemDescription" rows="4" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="itemCategory"
+                                    class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select id="itemCategory" name="itemCategory" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                    <option value="">Select a category</option>
+                                    <option value="textbooks">Textbooks</option>
+                                    <option value="electronics">Electronics</option>
+                                    <option value="furniture">Furniture</option>
+                                    <option value="clothing">Clothing</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="itemPrice" class="block text-sm font-medium text-gray-700 mb-1">Price
+                                    (₹)</label>
+                                <input type="number" id="itemPrice" name="itemPrice" min="0" step="1" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Images</label>
+                            <div class="mt-1 flex items-center">
+                                <label for="itemImages" class="cursor-pointer">
+                                    <div
+                                        class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-6 hover:border-gray-400 transition">
+                                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-600">Click to upload images</p>
+                                        <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                                    </div>
+                                    <input id="itemImages" name="itemImages" type="file" class="hidden" multiple
+                                        accept="image/*">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancelSellBtn"
+                                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button type="submit" id="submitListingBtn"
+                                class="btn-primary inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white">
+                                <span id="submitBtnText">List Item</span>
+                                <span id="submitSpinner" class="hidden ml-2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Profile content (hidden by default) -->
+            <div id="profileContent" class="hidden max-w-3xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-6">Your Profile</h2>
+
+                    <div class="flex flex-col md:flex-row items-start md:items-center mb-6">
+                        <div class="relative">
+                            <img class="w-24 h-24 rounded-full mb-4 md:mb-0 md:mr-6"
+                                src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" id="profileImage">
+                            <button onclick="document.getElementById('profileImageInput').click()"
+                                class="absolute bottom-0 right-0 md:right-6 bg-purple-600 text-white rounded-full p-2 hover:bg-purple-700 transition">
+                                <i class="fas fa-camera text-sm"></i>
+                            </button>
+                            <input type="file" id="profileImageInput" accept="image/*" class="hidden"
+                                onchange="updateProfileImage(event)">
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold" id="profileName">Ritik raj</h3>
+                            <p class="text-gray-600" id="profileCourse">Information Technology, 2nd Year</p>
+                            <p class="text-gray-600">MUJ ID: 23FE10ITE00XXX</p>
+                            <button class="mt-2 text-sm text-purple-600 hover:text-purple-500"
+                                onclick="toggleEditProfile()">Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h4 class="text-lg font-medium mb-3">Contact Information</h4>
+                            <p class="text-gray-700"><i class="fas fa-envelope mr-2 text-purple-600"></i> <span
+                                    id="profileEmail">
+                                    <RITIK class="23FE10ITE00XXX"></RITIK>@muj.manipal.edu
+                                </span></p>
+                            <p class="text-gray-700 mt-2"><i class="fas fa-phone mr-2 text-purple-600"></i> <span
+                                    id="profilePhone">+91 xxxxxxxxx</span></p>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-medium mb-3">Account Stats</h4>
+                            <p class="text-gray-700"><i class="fas fa-store mr-2 text-purple-600"></i> 8 Active Listings
+                            </p>
+                            <p class="text-gray-700 mt-2"><i class="fas fa-star mr-2 text-purple-600"></i> 4.8 Seller
+                                Rating</p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="text-lg font-medium mb-3">Change Password</h4>
+                        <form id="changePasswordForm">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                                <input type="password" id="currentPassword"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                                <input type="password" id="newPassword"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                                <input type="password" id="confirmPassword"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                            </div>
+                            <button type="submit" class="btn-primary px-4 py-2 text-sm font-medium">
+                                Update Password
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Edit Profile Form (hidden by default) -->
+                    <div id="editProfileForm" class="hidden border-t border-gray-200 pt-4 mt-4">
+                        <h4 class="text-lg font-medium mb-3">Edit Profile Information</h4>
+                        <form id="profileEditForm">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="editName"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                    value="John Doe">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Course & Year</label>
+                                <input type="text" id="editCourse"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                    value="Computer Science, 3rd Year">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <input type="tel" id="editPhone"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                                    value="+91 9876543210">
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="toggleEditProfile()"
+                                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn-primary px-4 py-2 text-sm font-medium">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages content (hidden by default) -->
+            <div id="messagesContent" class="hidden max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3">
+                        <!-- Conversations list -->
+                        <div class="border-r border-gray-200">
+                            <div class="p-4 border-b border-gray-200">
+                                <h2 class="text-xl font-bold">Messages</h2>
+                            </div>
+                            <div class="divide-y divide-gray-200 overflow-y-auto" style="max-height: 600px;">
+                                <div class="p-4 hover:bg-gray-50 cursor-pointer"
+                                    onclick="loadConversation('Sarah Johnson')">
+                                    <div class="flex items-center">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User"
+                                            class="w-10 h-10 rounded-full mr-3">
+                                        <div>
+                                            <h4 class="font-medium">dhruv</h4>
+                                            <p class="text-sm text-gray-500 truncate">About the Calculus textbook...</p>
+                                        </div>
+                                        <span class="ml-auto text-xs text-gray-500">2h ago</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 hover:bg-gray-50 cursor-pointer"
+                                    onclick="loadConversation('Rahul Sharma')">
+                                    <div class="flex items-center">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User"
+                                            class="w-10 h-10 rounded-full mr-3">
+                                        <div>
+                                            <h4 class="font-medium">Rahul Sharma</h4>
+                                            <p class="text-sm text-gray-500 truncate">Is the calculator still available?
+                                            </p>
+                                        </div>
+                                        <span class="ml-auto text-xs text-gray-500">5h ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Conversation area -->
+                        <div class="md:col-span-2">
+                            <div id="emptyConversation"
+                                class="h-full flex flex-col items-center justify-center p-8 text-center">
+                                <i class="fas fa-comments text-4xl text-gray-300 mb-4"></i>
+                                <h3 class="text-xl font-medium text-gray-700 mb-2">Select a conversation</h3>
+                                <p class="text-gray-500">Choose a conversation from the list to start messaging</p>
+                            </div>
+
+                            <div id="activeConversation" class="hidden h-full flex flex-col">
+                                <div class="p-4 border-b border-gray-200 flex items-center">
+                                    <img id="conversationAvatar" src="https://randomuser.me/api/portraits/women/44.jpg"
+                                        alt="User" class="w-10 h-10 rounded-full mr-3">
+                                    <h3 id="conversationName" class="font-medium">Sarah Johnson</h3>
+                                    <button class="ml-auto text-gray-500 hover:text-gray-700">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+
+                                <div class="flex-1 p-4 overflow-y-auto message-container" id="messageContainer">
+                                    <!-- Messages will be loaded here -->
+                                </div>
+
+                                <div class="p-4 border-t border-gray-200">
+                                    <form id="messageForm" class="flex items-center">
+                                        <input type="text" id="messageInput" placeholder="Type your message..."
+                                            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                        <button type="submit"
+                                            class="px-4 py-2 bg-purple-600 text-white rounded-r-md hover:bg-purple-700">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for listing details -->
+    <div id="listingModal" class="fixed inset-0 overflow-y-auto z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Listing Details
+                                </h3>
+                                <button type="button" id="closeModalBtn"
+                                    class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+
+                            <div class="mt-4" id="modalContent">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <div class="rounded-lg overflow-hidden mb-4">
+                                            <img src="https://m.media-amazon.com/images/I/41SH-SvWPxL.jpg"
+                                                alt="Textbook" class="w-full h-64 object-cover">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-start mb-4">
+                                            <h4 class="text-xl font-bold">₹600</h4>
+                                            <span
+                                                class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
+                                        </div>
+
+                                        <div class="flex items-center mb-4">
+                                            <div class="flex items-center text-yellow-400 mr-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <span class="text-sm text-gray-600">4.5 (12 reviews)</span>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h5 class="text-sm font-medium text-gray-500 mb-1">Description</h5>
+                                            <p class="text-gray-700">Used textbook for CS-201 course. Good condition
+                                                with minimal highlighting.</p>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h5 class="text-sm font-medium text-gray-500 mb-1">Seller Information</h5>
+                                            <div class="flex items-center mt-2">
+                                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Seller"
+                                                    class="w-10 h-10 rounded-full mr-3">
+                                                <div>
+                                                    <p class="font-medium">Rahul Sharma</p>
+                                                    <p class="text-sm text-gray-600">CSE, 3rd Year</p>
+                                                    <div class="flex items-center mt-1">
+                                                        <div class="flex items-center text-yellow-400 mr-2">
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star"></i>
+                                                            <i class="far fa-star"></i>
+                                                        </div>
+                                                        <span class="text-xs text-gray-500">4.0/5</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button"
+                        class="ml-3 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                        onclick="purchaseItem(1)">
+                        <i class="fas fa-shopping-cart mr-2"></i> Purchase
+                    </button>
+                    <button type="button"
+                        class="ml-3 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onclick="messageSeller(1)">
+                        <i class="fas fa-comment mr-2"></i> Message Seller
+                    </button>
+                    <button type="button"
+                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                        onclick="closeModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dash.js"></script>
+</body>
+
+</html>

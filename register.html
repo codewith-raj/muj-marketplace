@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MUJ Marketplace - Sign up to buy and sell items within the university community">
+    <title>MUJ Marketplace - Authentication</title>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        as="style">
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('https://i.ytimg.com/vi/F3BrKOi18lE/maxresdefault.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 28rem;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .auth-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Improved focus styles for accessibility */
+        .input-field:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength.weak {
+            background-color: var(--error);
+            width: 25%;
+        }
+
+        .password-strength.moderate {
+            background-color: var(--accent);
+            width: 50%;
+        }
+
+        .password-strength.strong {
+            background-color: var(--secondary);
+            width: 75%;
+        }
+
+        .password-strength.very-strong {
+            background-color: var(--secondary);
+            width: 100%;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .auth-container {
+                border-radius: 0.75rem;
+            }
+        }
+
+        /* Dark mode enhancements */
+        @media (prefers-color-scheme: dark) {
+            .auth-container {
+                background: rgba(15, 23, 42, 0.95);
+                color: #f8fafc;
+            }
+
+            .input-field {
+                background: rgba(30, 41, 59, 0.5);
+                border-color: #334155;
+                color: #f8fafc;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container p-8 sm:p-10">
+        <div class="text-center">
+            <!-- Logo -->
+            <img class="mx-auto h-16 w-auto"
+                src="https://www.onlinemanipal.com/wp-content/uploads/2022/07/MicrosoftTeams-image-9.png.webp"
+                alt="MUJ Marketplace Logo" width="200" height="80" loading="eager">
+            <div class="text-xl font-bold text-purple-600 mt-2">MUJ Marketplace</div>
+
+            <!-- Dynamic Form Container -->
+            <div id="formContainer">
+                <!-- Content will be loaded dynamically via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== Configuration ==========
+        const CONFIG = {
+            apiBaseUrl: 'https://api.muj-marketplace.in/v1',
+            endpoints: {
+                login: '/auth/login',
+                register: '/auth/register',
+                socialAuth: '/auth/social'
+            },
+            minPasswordLength: 8,
+            universityEmailDomain: '@muj.manipal.edu'
+        };
+
+        // ========== State Management ==========
+        let appState = {
+            currentForm: 'login', // 'login' or 'signup'
+            isLoading: false,
+            passwordStrength: null
+        };
+
+        // ========== DOM Elements ==========
+        const formContainer = document.getElementById('formContainer');
+
+        // ========== Templates ==========
+        const templates = {
+            loginForm: `
+                <h1 class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">Welcome Back</h1>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    Don't have an account?
+                    <button id="switchToSignup" class="font-medium text-purple-600 hover:text-purple-500 transition-colors focus:outline-none">
+                        Sign up now
+                    </button>
+                </p>
+
+                <form class="mt-8 space-y-6" id="loginForm" novalidate>
+                    <div class="rounded-md shadow-sm space-y-4">
+                        <div class="relative">
+                            <label for="loginEmail" class="sr-only">University Email</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="loginEmail" name="email" type="email" autocomplete="email" required
+                                class="w-full px-4 py-3 pl-10 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="University Email (e.g., abc123${CONFIG.universityEmailDomain})"
+                                pattern="[a-zA-Z0-9._%+-]+${CONFIG.universityEmailDomain.replace('.', '\\.')}$"
+                                title="Please enter a valid MUJ email address">
+                        </div>
+
+                        <div class="relative">
+                            <label for="loginPassword" class="sr-only">Password</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="loginPassword" name="password" type="password" autocomplete="current-password"
+                                required minlength="${CONFIG.minPasswordLength}"
+                                class="w-full px-4 py-3 pl-10 pr-12 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="Password (min ${CONFIG.minPasswordLength} characters)">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 focus:outline-none"
+                                aria-label="Toggle password visibility">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="rememberMe" name="remember-me" type="checkbox"
+                                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700">
+                            <label for="rememberMe" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div class="text-sm">
+                            <button id="forgotPasswordBtn" class="font-medium text-purple-600 hover:text-purple-500 transition-colors focus:outline-none">
+                                Forgot password?
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" id="loginBtn"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                            <span id="loginBtnText">Sign In</span>
+                            <span id="loginSpinner" class="ml-2 hidden">
+                                <i class="fas fa-circle-notch fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8">
+                    <div class="relative flex items-center py-4">
+                        <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                        <span class="flex-shrink mx-4 text-sm text-gray-500 dark:text-gray-400">Or continue with</span>
+                        <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button type="button" id="googleLogin"
+                            class="w-full inline-flex justify-center items-center py-2.5 px-4 border rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all focus:outline-none">
+                            <i class="fab fa-google text-red-500 mr-2"></i> Google
+                        </button>
+                        <button type="button" id="microsoftLogin"
+                            class="w-full inline-flex justify-center items-center py-2.5 px-4 border rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all focus:outline-none">
+                            <i class="fab fa-microsoft text-blue-500 mr-2"></i> Microsoft
+                        </button>
+                    </div>
+                </div>
+            `,
+
+            signupForm: `
+                <h1 class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">Create Your Account</h1>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    Already have an account?
+                    <button id="switchToLogin" class="font-medium text-purple-600 hover:text-purple-500 transition-colors focus:outline-none">
+                        Sign in here
+                    </button>
+                </p>
+
+                <form class="mt-8 space-y-6" id="signupForm" novalidate>
+                    <div class="rounded-md shadow-sm space-y-4">
+                        <div class="relative">
+                            <label for="signupName" class="sr-only">Full Name</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="signupName" name="name" type="text" autocomplete="name" required
+                                class="w-full px-4 py-3 pl-10 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="Full Name">
+                        </div>
+
+                        <div class="relative">
+                            <label for="signupEmail" class="sr-only">University Email</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="signupEmail" name="email" type="email" autocomplete="email" required
+                                class="w-full px-4 py-3 pl-10 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="University Email (e.g., abc123${CONFIG.universityEmailDomain})"
+                                pattern="[a-zA-Z0-9._%+-]+${CONFIG.universityEmailDomain.replace('.', '\\.')}$"
+                                title="Please enter a valid MUJ email address">
+                        </div>
+
+                        <div class="relative">
+                            <label for="signupPassword" class="sr-only">Password</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="signupPassword" name="password" type="password" autocomplete="new-password"
+                                required minlength="${CONFIG.minPasswordLength}"
+                                class="w-full px-4 py-3 pl-10 pr-12 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="Password (min ${CONFIG.minPasswordLength} characters)">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 focus:outline-none"
+                                aria-label="Toggle password visibility">
+                                <i class="far fa-eye"></i>
+                            </button>
+                            <div class="password-strength mt-1 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                        </div>
+
+                        <div class="relative">
+                            <label for="signupConfirmPassword" class="sr-only">Confirm Password</label>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 dark:text-gray-500"></i>
+                            </div>
+                            <input id="signupConfirmPassword" name="confirmPassword" type="password"
+                                autocomplete="new-password" required minlength="${CONFIG.minPasswordLength}"
+                                class="w-full px-4 py-3 pl-10 pr-12 border rounded-md placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm input-field"
+                                placeholder="Confirm Password">
+                            <button type="button" class="password-toggle absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 focus:outline-none"
+                                aria-label="Toggle password visibility">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input id="termsAgreement" name="terms" type="checkbox" required
+                                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="termsAgreement" class="text-gray-900 dark:text-gray-300">
+                                I agree to the <a href="#" class="text-purple-600 hover:underline">Terms of Service</a> and
+                                <a href="#" class="text-purple-600 hover:underline">Privacy Policy</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" id="signupBtn"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
+                            <span id="signupBtnText">Create Account</span>
+                            <span id="signupSpinner" class="ml-2 hidden">
+                                <i class="fas fa-circle-notch fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8">
+                    <div class="relative flex items-center py-4">
+                        <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                        <span class="flex-shrink mx-4 text-sm text-gray-500 dark:text-gray-400">Or sign up with</span>
+                        <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button type="button" id="googleSignup"
+                            class="w-full inline-flex justify-center items-center py-2.5 px-4 border rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all focus:outline-none">
+                            <i class="fab fa-google text-red-500 mr-2"></i> Google
+                        </button>
+                        <button type="button" id="microsoftSignup"
+                            class="w-full inline-flex justify-center items-center py-2.5 px-4 border rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all focus:outline-none">
+                            <i class="fab fa-microsoft text-blue-500 mr-2"></i> Microsoft
+                        </button>
+                    </div>
+                </div>
+            `,
+
+            message: (type, text) => `
+                <div class="mb-4 p-4 rounded-md border-l-4 ${type === 'error'
+                    ? 'bg-red-50 dark:bg-red-900/20 border-red-500'
+                    : 'bg-green-50 dark:bg-green-900/20 border-green-500'
+                }">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas ${type === 'error' ? 'fa-exclamation-circle text-red-500' : 'fa-check-circle text-green-500'
+                }"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm ${type === 'error' ? 'text-red-700 dark:text-red-300' : 'text-green-700 dark:text-green-300'
+                }">${text}</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        // ========== Utility Functions ==========
+        const utils = {
+            debounce: (func, delay) => {
+                let timeoutId;
+                return (...args) => {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => func.apply(this, args), delay);
+                };
+            },
+
+            validateEmail: (email) => {
+                return email.endsWith(CONFIG.universityEmailDomain);
+            },
+
+            checkPasswordStrength: (password) => {
+                if (!password) return null;
+
+                let strength = 0;
+
+                // Length check
+                if (password.length >= CONFIG.minPasswordLength) strength += 1;
+                if (password.length >= CONFIG.minPasswordLength + 4) strength += 1;
+
+                // Character variety checks
+                if (/[A-Z]/.test(password)) strength += 1;
+                if (/[0-9]/.test(password)) strength += 1;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+                return strength;
+            },
+
+            showMessage: (type, text, duration = 5000) => {
+                const messageElement = document.createElement('div');
+                messageElement.innerHTML = templates.message(type, text);
+                messageElement.classList.add('message', 'fade-in');
+
+                const form = document.querySelector(appState.currentForm === 'login' ? '#loginForm' : '#signupForm');
+                if (form) {
+                    form.parentNode.insertBefore(messageElement, form);
+
+                    setTimeout(() => {
+                        messageElement.classList.add('fade-out');
+                        setTimeout(() => messageElement.remove(), 300);
+                    }, duration);
+                }
+            },
+
+            setLoading: (isLoading, formType) => {
+                appState.isLoading = isLoading;
+
+                if (formType === 'login') {
+                    const btn = document.getElementById('loginBtn');
+                    const spinner = document.getElementById('loginSpinner');
+                    const btnText = document.getElementById('loginBtnText');
+
+                    if (btn) btn.disabled = isLoading;
+                    if (spinner) spinner.classList.toggle('hidden', !isLoading);
+                    if (btnText) btnText.textContent = isLoading ? 'Signing in...' : 'Sign In';
+                } else if (formType === 'signup') {
+                    const btn = document.getElementById('signupBtn');
+                    const spinner = document.getElementById('signupSpinner');
+                    const btnText = document.getElementById('signupBtnText');
+
+                    if (btn) btn.disabled = isLoading;
+                    if (spinner) spinner.classList.toggle('hidden', !isLoading);
+                    if (btnText) btnText.textContent = isLoading ? 'Creating account...' : 'Create Account';
+                }
+
+                // Disable social buttons during loading
+                ['googleLogin', 'microsoftLogin', 'googleSignup', 'microsoftSignup'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = isLoading;
+                });
+
+                // Disable form toggle buttons during loading
+                ['switchToLogin', 'switchToSignup'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = isLoading;
+                });
+            },
+
+            updatePasswordStrength: (password) => {
+                const strengthIndicator = document.querySelector('.password-strength');
+                if (!strengthIndicator) return;
+
+                const strength = utils.checkPasswordStrength(password);
+                appState.passwordStrength = strength;
+
+                // Reset classes
+                strengthIndicator.className = 'password-strength mt-1 rounded-full bg-gray-200 dark:bg-gray-700';
+
+                if (!password) {
+                    strengthIndicator.style.width = '0%';
+                    return;
+                }
+
+                if (strength <= 2) {
+                    strengthIndicator.classList.add('weak');
+                } else if (strength === 3) {
+                    strengthIndicator.classList.add('moderate');
+                } else if (strength === 4) {
+                    strengthIndicator.classList.add('strong');
+                } else {
+                    strengthIndicator.classList.add('very-strong');
+                }
+            }
+        };
+
+        // ========== Form Handlers ==========
+        const formHandlers = {
+            initForms: () => {
+                // Check URL parameters to determine which form to show
+                const urlParams = new URLSearchParams(window.location.search);
+                const showSignup = urlParams.get('signup') === 'true';
+
+                appState.currentForm = showSignup ? 'signup' : 'login';
+                formHandlers.renderForm();
+
+                // Set focus to the first input field
+                setTimeout(() => {
+                    const firstInput = document.querySelector(
+                        appState.currentForm === 'login' ? '#loginEmail' : '#signupName'
+                    );
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            },
+
+            renderForm: () => {
+                formContainer.innerHTML = appState.currentForm === 'login'
+                    ? templates.loginForm
+                    : templates.signupForm;
+
+                formHandlers.setupEventListeners();
+
+                // Check for remembered email in localStorage
+                if (appState.currentForm === 'login') {
+                    const rememberedEmail = localStorage.getItem('rememberedEmail');
+                    if (rememberedEmail) {
+                        document.getElementById('loginEmail').value = rememberedEmail;
+                        document.getElementById('rememberMe').checked = true;
+                    }
+                }
+            },
+
+            setupEventListeners: () => {
+                // Form toggle buttons
+                if (document.getElementById('switchToSignup')) {
+                    document.getElementById('switchToSignup').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!appState.isLoading) {
+                            appState.currentForm = 'signup';
+                            formHandlers.renderForm();
+                            history.pushState(null, '', '?signup=true');
+                        }
+                    });
+                }
+
+                if (document.getElementById('switchToLogin')) {
+                    document.getElementById('switchToLogin').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (!appState.isLoading) {
+                            appState.currentForm = 'login';
+                            formHandlers.renderForm();
+                            history.pushState(null, '', window.location.pathname);
+                        }
+                    });
+                }
+
+                // Password visibility toggles
+                document.querySelectorAll('.password-toggle').forEach(toggle => {
+                    toggle.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const input = toggle.parentNode.querySelector('input');
+                        if (input) {
+                            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                            input.setAttribute('type', type);
+
+                            const icon = toggle.querySelector('i');
+                            if (icon) {
+                                icon.classList.toggle('fa-eye');
+                                icon.classList.toggle('fa-eye-slash');
+                            }
+
+                            toggle.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
+                        }
+                    });
+                });
+
+                // Password strength indicator
+                if (document.getElementById('signupPassword')) {
+                    document.getElementById('signupPassword').addEventListener('input',
+                        utils.debounce((e) => {
+                            utils.updatePasswordStrength(e.target.value);
+                        }, 300)
+                    );
+                }
+
+                // Form submissions
+                if (document.getElementById('loginForm')) {
+                    document.getElementById('loginForm').addEventListener('submit', formHandlers.handleLogin);
+                }
+
+                if (document.getElementById('signupForm')) {
+                    document.getElementById('signupForm').addEventListener('submit', formHandlers.handleSignup);
+                }
+
+                // Social auth buttons
+                if (document.getElementById('googleLogin')) {
+                    document.getElementById('googleLogin').addEventListener('click', () => formHandlers.handleSocialAuth('google'));
+                }
+
+                if (document.getElementById('microsoftLogin')) {
+                    document.getElementById('microsoftLogin').addEventListener('click', () => formHandlers.handleSocialAuth('microsoft'));
+                }
+
+                if (document.getElementById('googleSignup')) {
+                    document.getElementById('googleSignup').addEventListener('click', () => formHandlers.handleSocialAuth('google'));
+                }
+
+                if (document.getElementById('microsoftSignup')) {
+                    document.getElementById('microsoftSignup').addEventListener('click', () => formHandlers.handleSocialAuth('microsoft'));
+                }
+
+                // Forgot password
+                if (document.getElementById('forgotPasswordBtn')) {
+                    document.getElementById('forgotPasswordBtn').addEventListener('click', formHandlers.handleForgotPassword);
+                }
+            },
+
+            handleLogin: async (e) => {
+                e.preventDefault();
+                if (appState.isLoading) return;
+
+                const form = e.target;
+                const email = form.loginEmail.value.trim();
+                const password = form.loginPassword.value;
+                const rememberMe = form.rememberMe.checked;
+
+                // Basic validation
+                if (!utils.validateEmail(email)) {
+                    utils.showMessage('error', 'Please use your MUJ email address');
+                    form.loginEmail.focus();
+                    return;
+                }
+
+                if (password.length < CONFIG.minPasswordLength) {
+                    utils.showMessage('error', `Password must be at least ${CONFIG.minPasswordLength} characters`);
+                    form.loginPassword.focus();
+                    return;
+                }
+
+                utils.setLoading(true, 'login');
+
+                try {
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+
+                    // In a real app, you would call your API:
+                    // const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.endpoints.login}`, {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({ email, password })
+                    // });
+                    // const data = await response.json();
+
+                    // For demo purposes:
+                    const data = {
+                        success: true,
+                        token: 'demo-login-token-123456',
+                        user: {
+                            id: 'user-123',
+                            email: email,
+                            name: email.split('@')[0],
+                            role: 'student',
+                            verified: true
+                        }
+                    };
+
+                    if (data.success) {
+                        // Store auth data
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+
+                        if (rememberMe) {
+                            localStorage.setItem('rememberedEmail', email);
+                        } else {
+                            localStorage.removeItem('rememberedEmail');
+                        }
+
+                        utils.showMessage('success', 'Login successful! Redirecting...');
+
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || 'Login failed');
+                    }
+                } catch (error) {
+                    utils.showMessage('error', error.message || 'Login failed. Please try again.');
+                } finally {
+                    utils.setLoading(false, 'login');
+                }
+            },
+
+            handleSignup: async (e) => {
+                e.preventDefault();
+                if (appState.isLoading) return;
+
+                const form = e.target;
+                const name = form.signupName.value.trim();
+                const email = form.signupEmail.value.trim();
+                const password = form.signupPassword.value;
+                const confirmPassword = form.signupConfirmPassword.value;
+                const termsAgreed = form.termsAgreement.checked;
+
+                // Validation
+                if (!name) {
+                    utils.showMessage('error', 'Full name is required');
+                    form.signupName.focus();
+                    return;
+                }
+
+                if (!utils.validateEmail(email)) {
+                    utils.showMessage('error', 'Please use your MUJ email address');
+                    form.signupEmail.focus();
+                    return;
+                }
+
+                if (password.length < CONFIG.minPasswordLength) {
+                    utils.showMessage('error', `Password must be at least ${CONFIG.minPasswordLength} characters`);
+                    form.signupPassword.focus();
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    utils.showMessage('error', 'Passwords do not match');
+                    form.signupConfirmPassword.focus();
+                    return;
+                }
+
+                if (!termsAgreed) {
+                    utils.showMessage('error', 'You must agree to the terms and conditions');
+                    return;
+                }
+
+                utils.setLoading(true, 'signup');
+
+                try {
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // In a real app, you would call your API:
+                    // const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.endpoints.register}`, {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({ name, email, password })
+                    // });
+                    // const data = await response.json();
+
+                    // For demo purposes:
+                    const data = {
+                        success: true,
+                        token: 'demo-signup-token-123456',
+                        user: {
+                            id: 'new-user-123',
+                            email: email,
+                            name: name,
+                            role: 'student',
+                            verified: false
+                        }
+                    };
+
+                    if (data.success) {
+                        // Store auth data
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+
+                        utils.showMessage('success', 'Account created successfully! Redirecting...');
+
+                        // Redirect to verification or dashboard
+                        setTimeout(() => {
+                            window.location.href = data.user.verified ? 'dashboard.html' : 'verify-email.html';
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || 'Registration failed');
+                    }
+                } catch (error) {
+                    utils.showMessage('error', error.message || 'Registration failed. Please try again.');
+                } finally {
+                    utils.setLoading(false, 'signup');
+                }
+            },
+
+            handleSocialAuth: async (provider) => {
+                if (appState.isLoading) return;
+
+                const currentForm = appState.currentForm;
+                utils.setLoading(true, currentForm);
+
+                try {
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+
+                    // In a real app, this would redirect to OAuth provider
+                    // window.location.href = `${CONFIG.apiBaseUrl}${CONFIG.endpoints.socialAuth}/${provider}`;
+
+                    // For demo purposes:
+                    const email = currentForm === 'signup'
+                        ? `new${Math.floor(Math.random() * 1000)}${CONFIG.universityEmailDomain}`
+                        : document.getElementById('loginEmail')?.value.trim() || `user${Math.floor(Math.random() * 1000)}${CONFIG.universityEmailDomain}`;
+
+                    const data = {
+                        success: true,
+                        token: `${provider}-demo-token-123456`,
+                        user: {
+                            id: `${provider}-user-123`,
+                            email: email,
+                            name: `${provider} User`,
+                            role: 'student',
+                            verified: true,
+                            authProvider: provider
+                        }
+                    };
+
+                    if (data.success) {
+                        // Store auth data
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+
+                        utils.showMessage('success', `${provider} authentication successful! Redirecting...`);
+
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || `${provider} authentication failed`);
+                    }
+                } catch (error) {
+                    utils.showMessage('error', error.message || `${provider} authentication failed. Please try again.`);
+                } finally {
+                    utils.setLoading(false, currentForm);
+                }
+            },
+
+            handleForgotPassword: (e) => {
+                e.preventDefault();
+                if (appState.isLoading) return;
+
+                const emailInput = document.getElementById('loginEmail');
+                const email = emailInput?.value.trim();
+
+                if (!email) {
+                    utils.showMessage('error', 'Please enter your email address first');
+                    emailInput?.focus();
+                    return;
+                }
+
+                if (!utils.validateEmail(email)) {
+                    utils.showMessage('error', 'Please enter a valid MUJ email address');
+                    emailInput?.focus();
+                    return;
+                }
+
+                utils.setLoading(true, 'login');
+
+                // Simulate API call
+                setTimeout(() => {
+                    utils.setLoading(false, 'login');
+                    utils.showMessage('success', `Password reset link sent to ${email}. Please check your inbox.`);
+                }, 1500);
+            }
+        };
+
+        // ========== Initialize Application ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            formHandlers.initForms();
+
+            // Check for existing session
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                // In a real app, you would verify the token with your backend
+                // For now, we'll just redirect if a token exists
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const showSignup = urlParams.get('signup') === 'true';
+
+            if ((showSignup && appState.currentForm !== 'signup') || (!showSignup && appState.currentForm !== 'login')) {
+                appState.currentForm = showSignup ? 'signup' : 'login';
+                formHandlers.renderForm();
+            }
+        });
+    </script>
+</body>
+
+</html>
