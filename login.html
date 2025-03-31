@@ -230,7 +230,6 @@
             }
         }
 
-        /* Dark mode support */
         @media (prefers-color-scheme: dark) {
             .login-container {
                 background: rgba(15, 23, 42, 0.95);
@@ -359,7 +358,6 @@
     </div>
 
     <script>
-        // DOM Elements
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
         const togglePassword = document.getElementById('togglePassword');
@@ -369,7 +367,6 @@
         const microsoftLogin = document.getElementById('microsoftLogin');
         const rememberMe = document.getElementById('remember-me');
 
-        // API Configuration
         const API_BASE_URL = 'https://api.muj-marketplace.in/v1';
         const AUTH_ENDPOINTS = {
             login: `${API_BASE_URL}/auth/login`,
@@ -377,7 +374,6 @@
             microsoft: `${API_BASE_URL}/auth/microsoft`
         };
 
-        // Toggle password visibility
         togglePassword.addEventListener('click', function () {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
@@ -385,37 +381,32 @@
             icon.classList.toggle('fa-eye');
             icon.classList.toggle('fa-eye-slash');
 
-            // Update aria-label for accessibility
             this.setAttribute('aria-label',
                 type === 'password' ? 'Show password' : 'Hide password');
         });
 
-        // Form submission
         loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // Reset any previous errors
             resetErrors();
 
-            // Validate inputs
             if (!validateForm()) return;
 
             const email = emailInput.value.trim();
             const password = passwordInput.value;
             const remember = rememberMe.checked;
 
-            // Show loading state
+           
             setLoadingState(true);
 
             try {
-                // Authenticate user
                 const response = await authenticateUser(email, password, remember);
 
                 if (response.success) {
-                    // Store token and user data
+                    
                     storeAuthData(response.data);
 
-                    // Redirect to dashboard
+                  
                     window.location.href = "dashboard.html";
                 } else {
                     throw new Error(response.message || "Login failed");
@@ -426,21 +417,19 @@
             }
         });
 
-        // Google Login
         googleLogin.addEventListener('click', async function (e) {
             e.preventDefault();
             setLoadingState(true, "Redirecting to Google...");
 
             try {
-                // In a real app, this would redirect to Google OAuth
-                // For demo, we'll simulate the process
+        
                 const response = await initiateSocialLogin('google');
 
                 if (response.success) {
                     // Store token and user data
                     storeAuthData(response.data);
 
-                    // Redirect to dashboard
+                   
                     window.location.href = "dashboard.html";
                 } else {
                     throw new Error(response.message || "Google login failed");
@@ -451,21 +440,19 @@
             }
         });
 
-        // Microsoft Login
         microsoftLogin.addEventListener('click', async function (e) {
             e.preventDefault();
             setLoadingState(true, "Redirecting to Microsoft...");
 
             try {
-                // In a real app, this would redirect to Microsoft OAuth
-                // For demo, we'll simulate the process
+             
                 const response = await initiateSocialLogin('microsoft');
 
                 if (response.success) {
                     // Store token and user data
                     storeAuthData(response.data);
 
-                    // Redirect to dashboard
+                  
                     window.location.href = "dashboard.html";
                 } else {
                     throw new Error(response.message || "Microsoft login failed");
@@ -480,7 +467,7 @@
         function validateForm() {
             let isValid = true;
 
-            // Email validation
+          
             if (!emailInput.value.endsWith('@muj.manipal.edu')) {
                 showFieldError(emailInput, "Please use your MUJ email address");
                 isValid = false;
@@ -495,7 +482,6 @@
             return isValid;
         }
 
-        // Reset all error states
         function resetErrors() {
             document.querySelectorAll('.error-message').forEach(el => el.remove());
             document.querySelectorAll('.input-error').forEach(el => {
@@ -503,24 +489,22 @@
             });
         }
 
-        // Show field-specific error
         function showFieldError(field, message) {
             field.classList.add('border-red-500', 'input-error');
 
-            // Create error message element
+            
             const errorDiv = document.createElement('p');
             errorDiv.className = 'mt-1 text-sm text-red-600 error-message';
             errorDiv.textContent = message;
 
-            // Insert after the field
+            
             field.parentNode.insertBefore(errorDiv, field.nextSibling);
 
-            // Add shake animation to draw attention
+           
             field.classList.add('shake');
             setTimeout(() => field.classList.remove('shake'), 400);
         }
 
-        // Authenticate user with email/password
         async function authenticateUser(email, password, remember) {
             try {
                 const response = await fetch(AUTH_ENDPOINTS.login, {
@@ -554,11 +538,9 @@
             }
         }
 
-        // Initiate social login
         async function initiateSocialLogin(provider) {
             try {
-                // In a real app, this would redirect to the provider's OAuth page
-                // For demo, we'll simulate the process
+                
                 const response = await fetch(AUTH_ENDPOINTS[provider], {
                     method: 'POST',
                     headers: {
@@ -586,15 +568,15 @@
             }
         }
 
-        // Store authentication data
+     
         function storeAuthData(authData) {
-            // Store token in localStorage
+          
             localStorage.setItem('authToken', authData.token);
 
-            // Store user data in localStorage
+            
             localStorage.setItem('userData', JSON.stringify(authData.user));
 
-            // If remember me was checked, store email
+        
             if (rememberMe.checked) {
                 localStorage.setItem('rememberedEmail', authData.user.email);
             } else {
@@ -602,7 +584,7 @@
             }
         }
 
-        // Show general error message
+      
         function showError(message) {
             // Create error message element
             const errorDiv = document.createElement('div');
@@ -618,17 +600,15 @@
                 </div>
             `;
 
-            // Insert error message before the form
+          
             loginForm.parentNode.insertBefore(errorDiv, loginForm);
 
-            // Auto-remove after 5 seconds
             setTimeout(() => {
                 errorDiv.classList.add('fade-out');
                 setTimeout(() => errorDiv.remove(), 300);
             }, 5000);
         }
 
-        // Set loading state
         function setLoadingState(isLoading, text = "Authenticating...") {
             if (isLoading) {
                 loginBtn.disabled = true;
@@ -655,9 +635,8 @@
             }
         }
 
-        // Initialize the page
         document.addEventListener('DOMContentLoaded', function () {
-            // Check for saved credentials
+          
             const rememberedEmail = localStorage.getItem('rememberedEmail');
             if (rememberedEmail) {
                 emailInput.value = rememberedEmail;
@@ -667,7 +646,7 @@
                 emailInput.focus();
             }
 
-            // Add input event listeners for real-time validation
+           
             emailInput.addEventListener('input', () => {
                 if (emailInput.classList.contains('input-error')) {
                     resetErrors();
@@ -680,16 +659,16 @@
                 }
             });
 
-            // Check for existing session
+            
             checkExistingSession();
         });
 
-        // Check for existing valid session
+        
         async function checkExistingSession() {
             const token = localStorage.getItem('authToken');
             if (token) {
                 try {
-                    // Verify token with backend
+                   
                     const response = await fetch(`${API_BASE_URL}/auth/verify`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -697,10 +676,10 @@
                     });
 
                     if (response.ok) {
-                        // Token is valid, redirect to dashboard
+                     
                         window.location.href = "index.html";
                     } else {
-                        // Token is invalid, clear it
+                        
                         localStorage.removeItem('authToken');
                     }
                 } catch (error) {

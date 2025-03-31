@@ -72,7 +72,7 @@ function setupEventListeners() {
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             if (this.getAttribute('data-page') === 'marketplace') {
-                // Let the default link behavior handle the marketplace redirect
+                
                 return;
             }
             e.preventDefault();
@@ -108,7 +108,7 @@ function setupEventListeners() {
     
     changePasswordForm.addEventListener('submit', handleChangePasswordSubmit);
 
-    // Message form
+  
     messageForm.addEventListener('submit', handleMessageSubmit);
 }
 
@@ -136,10 +136,8 @@ function handleSignOut() {
 }
 
 function navigateTo(page) {
-    // Update current page
     currentPage = page;
 
-    // Update active nav link
     navLinks.forEach(link => {
         if (link.getAttribute('data-page') === page) {
             link.classList.add('active');
@@ -177,7 +175,7 @@ function navigateTo(page) {
 function handleSellItemSubmit(event) {
     event.preventDefault();
 
-    // Get form values
+   
     const title = document.getElementById('itemTitle').value;
     const description = document.getElementById('itemDescription').value;
     const category = document.getElementById('itemCategory').value;
@@ -189,7 +187,7 @@ function handleSellItemSubmit(event) {
         return;
     }
 
-    // Show loading state
+   
     submitBtnText.textContent = 'Processing...';
     submitSpinner.classList.remove('hidden');
     submitListingBtn.disabled = true;
@@ -244,7 +242,7 @@ function handleChangePasswordSubmit(event) {
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
-    // Validate form
+   
     if (!currentPassword || !newPassword || !confirmPassword) {
         showToast('Please fill all fields', 'error');
         return;

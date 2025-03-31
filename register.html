@@ -7,7 +7,7 @@
     <meta name="description" content="MUJ Marketplace - Sign up to buy and sell items within the university community">
     <title>MUJ Marketplace - Authentication</title>
 
-    <!-- Preload critical resources -->
+    
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         as="style">
@@ -58,13 +58,13 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
         }
 
-        /* Improved focus styles for accessibility */
+        
         .input-field:focus-visible {
             outline: 2px solid var(--primary);
             outline-offset: 2px;
         }
 
-        /* Password strength indicator */
+     
         .password-strength {
             height: 4px;
             transition: all 0.3s ease;
@@ -132,7 +132,7 @@
             }
         }
 
-        /* Dark mode enhancements */
+     
         @media (prefers-color-scheme: dark) {
             .auth-container {
                 background: rgba(15, 23, 42, 0.95);
@@ -157,15 +157,13 @@
                 alt="MUJ Marketplace Logo" width="200" height="80" loading="eager">
             <div class="text-xl font-bold text-purple-600 mt-2">MUJ Marketplace</div>
 
-            <!-- Dynamic Form Container -->
             <div id="formContainer">
-                <!-- Content will be loaded dynamically via JavaScript -->
+             
             </div>
         </div>
     </div>
 
     <script>
-        // ========== Configuration ==========
         const CONFIG = {
             apiBaseUrl: 'https://api.muj-marketplace.in/v1',
             endpoints: {
@@ -403,7 +401,6 @@
             `
         };
 
-        // ========== Utility Functions ==========
         const utils = {
             debounce: (func, delay) => {
                 let timeoutId;
@@ -471,13 +468,13 @@
                     if (btnText) btnText.textContent = isLoading ? 'Creating account...' : 'Create Account';
                 }
 
-                // Disable social buttons during loading
+        
                 ['googleLogin', 'microsoftLogin', 'googleSignup', 'microsoftSignup'].forEach(id => {
                     const btn = document.getElementById(id);
                     if (btn) btn.disabled = isLoading;
                 });
 
-                // Disable form toggle buttons during loading
+          
                 ['switchToLogin', 'switchToSignup'].forEach(id => {
                     const btn = document.getElementById(id);
                     if (btn) btn.disabled = isLoading;
@@ -571,7 +568,7 @@
                     });
                 }
 
-                // Password visibility toggles
+             
                 document.querySelectorAll('.password-toggle').forEach(toggle => {
                     toggle.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -591,7 +588,7 @@
                     });
                 });
 
-                // Password strength indicator
+             
                 if (document.getElementById('signupPassword')) {
                     document.getElementById('signupPassword').addEventListener('input',
                         utils.debounce((e) => {
@@ -609,7 +606,6 @@
                     document.getElementById('signupForm').addEventListener('submit', formHandlers.handleSignup);
                 }
 
-                // Social auth buttons
                 if (document.getElementById('googleLogin')) {
                     document.getElementById('googleLogin').addEventListener('click', () => formHandlers.handleSocialAuth('google'));
                 }
@@ -660,15 +656,6 @@
                     // Simulate API call
                     await new Promise(resolve => setTimeout(resolve, 1500));
 
-                    // In a real app, you would call your API:
-                    // const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.endpoints.login}`, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({ email, password })
-                    // });
-                    // const data = await response.json();
-
-                    // For demo purposes:
                     const data = {
                         success: true,
                         token: 'demo-login-token-123456',
@@ -682,7 +669,7 @@
                     };
 
                     if (data.success) {
-                        // Store auth data
+                     
                         localStorage.setItem('authToken', data.token);
                         localStorage.setItem('userData', JSON.stringify(data.user));
 
@@ -694,7 +681,7 @@
 
                         utils.showMessage('success', 'Login successful! Redirecting...');
 
-                        // Redirect to dashboard
+                        
                         setTimeout(() => {
                             window.location.href = 'dashboard.html';
                         }, 1000);
@@ -719,7 +706,6 @@
                 const confirmPassword = form.signupConfirmPassword.value;
                 const termsAgreed = form.termsAgreement.checked;
 
-                // Validation
                 if (!name) {
                     utils.showMessage('error', 'Full name is required');
                     form.signupName.focus();
@@ -755,15 +741,7 @@
                     // Simulate API call
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
-                    // In a real app, you would call your API:
-                    // const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.endpoints.register}`, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({ name, email, password })
-                    // });
-                    // const data = await response.json();
-
-                    // For demo purposes:
+                
                     const data = {
                         success: true,
                         token: 'demo-signup-token-123456',
@@ -783,7 +761,7 @@
 
                         utils.showMessage('success', 'Account created successfully! Redirecting...');
 
-                        // Redirect to verification or dashboard
+                    
                         setTimeout(() => {
                             window.location.href = data.user.verified ? 'dashboard.html' : 'verify-email.html';
                         }, 1000);
@@ -807,10 +785,6 @@
                     // Simulate API call
                     await new Promise(resolve => setTimeout(resolve, 1500));
 
-                    // In a real app, this would redirect to OAuth provider
-                    // window.location.href = `${CONFIG.apiBaseUrl}${CONFIG.endpoints.socialAuth}/${provider}`;
-
-                    // For demo purposes:
                     const email = currentForm === 'signup'
                         ? `new${Math.floor(Math.random() * 1000)}${CONFIG.universityEmailDomain}`
                         : document.getElementById('loginEmail')?.value.trim() || `user${Math.floor(Math.random() * 1000)}${CONFIG.universityEmailDomain}`;
@@ -829,13 +803,12 @@
                     };
 
                     if (data.success) {
-                        // Store auth data
                         localStorage.setItem('authToken', data.token);
                         localStorage.setItem('userData', JSON.stringify(data.user));
 
                         utils.showMessage('success', `${provider} authentication successful! Redirecting...`);
 
-                        // Redirect to dashboard
+                        
                         setTimeout(() => {
                             window.location.href = 'dashboard.html';
                         }, 1000);
@@ -885,8 +858,7 @@
             // Check for existing session
             const authToken = localStorage.getItem('authToken');
             if (authToken) {
-                // In a real app, you would verify the token with your backend
-                // For now, we'll just redirect if a token exists
+               
                 window.location.href = 'index.html';
             }
         });

@@ -30,11 +30,11 @@ const messageContainer = document.getElementById('messageContainer');
 const emptyConversation = document.getElementById('emptyConversation');
 const activeConversation = document.getElementById('activeConversation');
 
-// Current page state
+
 let currentPage = 'dashboard';
 let currentConversation = null;
 
-// Sample messages data
+
 const messagesData = {
     'Sarah Johnson': [
         { sender: 'Sarah Johnson', text: 'Hi, is the Calculus textbook still available?', time: '10:30 AM' },
@@ -48,32 +48,27 @@ const messagesData = {
     ]
 };
 
-// Initialize the dashboard
 document.addEventListener('DOMContentLoaded', function () {
     setupEventListeners();
 });
 
 function setupEventListeners() {
-    // Mobile menu toggle
+   
     mobileMenuButton.addEventListener('click', toggleMobileMenu);
     sidebarOverlay.addEventListener('click', toggleMobileMenu);
 
-    // Search functionality
     searchButton.addEventListener('click', toggleSearchBox);
 
-    // User menu toggle
     userMenuButton.addEventListener('click', toggleUserMenu);
 
-    // Sign out buttons
     signOutBtns.forEach(btn => {
         btn.addEventListener('click', handleSignOut);
     });
 
-    // Navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             if (this.getAttribute('data-page') === 'marketplace') {
-                // Let the default link behavior handle the marketplace redirect
+                
                 return;
             }
             e.preventDefault();
@@ -82,7 +77,7 @@ function setupEventListeners() {
         });
     });
 
-    // Sell item buttons
+
     sellItemBtn.addEventListener('click', function (e) {
         e.preventDefault();
         navigateTo('sell');
@@ -93,23 +88,22 @@ function setupEventListeners() {
         navigateTo('sell');
     });
 
-    // Sell item form
+    
     sellItemForm.addEventListener('submit', handleSellItemSubmit);
     cancelSellBtn.addEventListener('click', function (e) {
         e.preventDefault();
         navigateTo('dashboard');
     });
 
-    // Modal close button
+    
     closeModalBtn.addEventListener('click', closeModal);
 
-    // Profile edit form
+ 
     profileEditForm.addEventListener('submit', handleProfileEditSubmit);
 
-    // Change password form
+ 
     changePasswordForm.addEventListener('submit', handleChangePasswordSubmit);
 
-    // Message form
     messageForm.addEventListener('submit', handleMessageSubmit);
 }
 
@@ -137,10 +131,10 @@ function handleSignOut() {
 }
 
 function navigateTo(page) {
-    // Update current page
+ 
     currentPage = page;
 
-    // Update active nav link
+ 
     navLinks.forEach(link => {
         if (link.getAttribute('data-page') === page) {
             link.classList.add('active');
@@ -149,15 +143,13 @@ function navigateTo(page) {
         }
     });
 
-    // Update page title
+   
     pageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1);
 
-    // Hide all content sections
     document.querySelectorAll('#mainContent > div').forEach(section => {
         section.classList.add('hidden');
     });
 
-    // Show the selected content section
     if (page === 'dashboard') {
         dashboardContent.classList.remove('hidden');
     } else if (page === 'marketplace') {
@@ -170,7 +162,6 @@ function navigateTo(page) {
         messagesContent.classList.remove('hidden');
     }
 
-    // Close mobile menu if open
     sidebar.classList.remove('open');
     sidebarOverlay.classList.remove('open');
 }
@@ -178,37 +169,31 @@ function navigateTo(page) {
 function handleSellItemSubmit(event) {
     event.preventDefault();
 
-    // Get form values
+  
     const title = document.getElementById('itemTitle').value;
     const description = document.getElementById('itemDescription').value;
     const category = document.getElementById('itemCategory').value;
     const price = document.getElementById('itemPrice').value;
 
-    // Validate form
     if (!title || !description || !category || !price) {
         showToast('Please fill all fields', 'error');
         return;
     }
 
-    // Show loading state
     submitBtnText.textContent = 'Processing...';
     submitSpinner.classList.remove('hidden');
     submitListingBtn.disabled = true;
 
-    // Simulate API call
     setTimeout(() => {
-        // Reset form
         sellItemForm.reset();
 
-        // Hide loading state
+      
         submitBtnText.textContent = 'List Item';
         submitSpinner.classList.add('hidden');
         submitListingBtn.disabled = false;
 
-        // Show success message
         showToast('Your item has been listed successfully!', 'success');
 
-        // Navigate back to dashboard
         navigateTo('dashboard');
     }, 1500);
 }
@@ -221,32 +206,28 @@ function toggleEditProfile() {
 function handleProfileEditSubmit(event) {
     event.preventDefault();
 
-    // Get form values
     const name = document.getElementById('editName').value;
     const course = document.getElementById('editCourse').value;
     const phone = document.getElementById('editPhone').value;
 
-    // Update profile information
     document.getElementById('profileName').textContent = name;
     document.getElementById('profileCourse').textContent = course;
     document.getElementById('profilePhone').textContent = phone;
 
-    // Hide edit form
     toggleEditProfile();
 
-    // Show success message
     showToast('Profile updated successfully!', 'success');
 }
 
 function handleChangePasswordSubmit(event) {
     event.preventDefault();
 
-    // Get form values
+    
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
-    // Validate form
+    
     if (!currentPassword || !newPassword || !confirmPassword) {
         showToast('Please fill all fields', 'error');
         return;
@@ -257,12 +238,11 @@ function handleChangePasswordSubmit(event) {
         return;
     }
 
-    // Simulate password change
+   
     setTimeout(() => {
-        // Reset form
+        
         changePasswordForm.reset();
 
-        // Show success message
         showToast('Password changed successfully!', 'success');
     }, 1000);
 }
@@ -282,28 +262,26 @@ function updateProfileImage(event) {
 function loadConversation(contactName) {
     currentConversation = contactName;
 
-    // Update UI
+    
     document.getElementById('conversationName').textContent = contactName;
     document.getElementById('conversationAvatar').src = contactName === 'Sarah Johnson' ?
         'https://randomuser.me/api/portraits/men/44.jpg' :
         'https://randomuser.me/api/portraits/men/22.jpg';
 
-    // Show conversation area
+    
     emptyConversation.classList.add('hidden');
     activeConversation.classList.remove('hidden');
 
-    // Load messages
+    
     renderMessages(contactName);
 }
 
 function renderMessages(contactName) {
-    // Clear existing messages
     messageContainer.innerHTML = '';
 
-    // Get messages for this contact
     const messages = messagesData[contactName] || [];
 
-    // Add each message to the container
+    
     messages.forEach(msg => {
         const isSent = msg.sender === 'You';
 
@@ -320,7 +298,7 @@ function renderMessages(contactName) {
         messageContainer.appendChild(messageDiv);
     });
 
-    // Scroll to bottom
+    
     messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
@@ -330,7 +308,7 @@ function handleMessageSubmit(event) {
     const messageText = messageInput.value.trim();
     if (!messageText || !currentConversation) return;
 
-    // Create new message
+   
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -340,19 +318,18 @@ function handleMessageSubmit(event) {
         time: timeString
     };
 
-    // Add to messages data
+    
     if (!messagesData[currentConversation]) {
         messagesData[currentConversation] = [];
     }
     messagesData[currentConversation].push(newMessage);
 
-    // Clear input
+    
     messageInput.value = '';
 
-    // Re-render messages
     renderMessages(currentConversation);
 
-    // Simulate reply after 1 second
+    
     setTimeout(() => {
         const replyMessage = {
             sender: currentConversation,
@@ -431,7 +408,7 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Make functions available globally for HTML onclick attributes
+
 window.showItemModal = showItemModal;
 window.closeModal = closeModal;
 window.purchaseItem = purchaseItem;

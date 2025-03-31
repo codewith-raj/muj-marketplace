@@ -22,7 +22,6 @@
         </button>
     </div>
 
-    <!-- Header -->
     <header class="campus-bg text-white sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 py-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -78,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Search -->
             <div class="mt-4 md:hidden">
                 <div class="relative">
                     <input type="text" id="search-mobile" placeholder="Search for books, notes, gadgets..."
@@ -89,7 +87,6 @@
         </div>
     </header>
 
-    <!-- Login/Signup Modal -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -173,9 +170,8 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-        <!-- Categories Section -->
+    
         <section class="mb-12">
             <h2 class="text-2xl font-bold mb-6 flex items-center">
                 <i class="fas fa-tags mr-2 text-purple-600"></i> Popular Categories
@@ -240,7 +236,6 @@
             </div>
         </section>
 
-        <!-- Featured Section -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold flex items-center">
@@ -250,11 +245,9 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="featured-products">
-                <!-- Product cards will be loaded dynamically -->
             </div>
         </section>
 
-        <!-- Recently Added Section -->
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold flex items-center">
@@ -264,11 +257,9 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="recent-products">
-                <!-- Recently Added Items will be loaded dynamically -->
             </div>
         </section>
 
-        <!-- Services Section -->
         <section class="mb-12">
             <h2 class="text-2xl font-bold mb-6 flex items-center">
                 <i class="fas fa-concierge-bell mr-2 text-green-600"></i> Campus Services
@@ -313,28 +304,23 @@
             </div>
         </section>
 
-        <!-- Testimonials -->
         <section class="mb-12 bg-purple-50 rounded-xl p-8">
             <h2 class="text-2xl font-bold mb-8 text-center">What Students Say</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="testimonials">
-                <!-- Testimonials will be loaded dynamically -->
             </div>
         </section>
 
-        <!-- Campus Groups -->
         <section class="mb-12">
             <h2 class="text-2xl font-bold mb-6 flex items-center">
                 <i class="fas fa-users mr-2 text-red-500"></i> Campus Groups
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="campus-groups">
-                <!-- Campus groups will be loaded dynamically -->
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-12 pb-6">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -414,7 +400,6 @@
         </div>
     </footer>
 
-    <!-- Chat Widget -->
     <div class="fixed bottom-6 right-6 z-50">
         <div id="chat-widget" class="hidden bg-white rounded-t-xl shadow-xl w-80 h-96 flex flex-col">
             <div class="bg-purple-600 text-white p-3 rounded-t-xl flex justify-between items-center">
@@ -448,13 +433,11 @@
         </button>
     </div>
 
-    <!-- Back to Top Button -->
     <button id="back-to-top"
         class="fixed bottom-6 left-6 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 hidden">
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <script src="js/main.js"></script>

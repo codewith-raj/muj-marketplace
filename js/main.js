@@ -230,7 +230,6 @@ const marketplaceData = {
     ]
 };
 
-// DOM elements
 const elements = {
     featuredProducts: document.getElementById('featured-products'),
     recentProducts: document.getElementById('recent-products'),
@@ -243,9 +242,8 @@ const elements = {
     toast: document.getElementById('toast')
 };
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', function () {
-    // Load all dynamic content
+    
     renderFeaturedProducts();
     renderRecentProducts();
     renderTestimonials();
@@ -253,14 +251,12 @@ document.addEventListener('DOMContentLoaded', function () {
     renderNotifications();
     renderCart();
 
-    // Initialize event listeners
+   
     initEventListeners();
 
-    // For demo purposes, show auth modal after 3 seconds
     setTimeout(showModal, 3000);
 });
 
-// Render featured products
 function renderFeaturedProducts() {
     elements.featuredProducts.innerHTML = marketplaceData.featuredProducts.map(product => `
         <div class="product-card bg-white rounded-lg overflow-hidden shadow-md relative" data-id="${product.id}">
@@ -306,7 +302,7 @@ function renderFeaturedProducts() {
     `).join('');
 }
 
-// Render recent products
+
 function renderRecentProducts() {
     elements.recentProducts.innerHTML = marketplaceData.recentProducts.map(product => `
         <div class="product-card bg-white rounded-lg overflow-hidden shadow-md relative" data-id="${product.id}">
@@ -348,7 +344,7 @@ function renderRecentProducts() {
     `).join('');
 }
 
-// Render rating stars
+
 function renderRatingStars(rating) {
     let stars = '';
     const fullStars = Math.floor(rating);
@@ -367,7 +363,7 @@ function renderRatingStars(rating) {
     return `<div class="flex text-yellow-400 mr-2">${stars}</div>`;
 }
 
-// Render testimonials
+
 function renderTestimonials() {
     elements.testimonials.innerHTML = marketplaceData.testimonials.map(testimonial => `
         <div class="bg-white p-6 rounded-lg shadow-md">
@@ -387,7 +383,7 @@ function renderTestimonials() {
     `).join('');
 }
 
-// Render campus groups
+
 function renderCampusGroups() {
     elements.campusGroups.innerHTML = marketplaceData.campusGroups.map(group => `
         <a href="#" class="group-card bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border-l-4 border-${group.color}-500">
@@ -406,7 +402,7 @@ function renderCampusGroups() {
     `).join('');
 }
 
-// Render notifications
+
 function renderNotifications() {
     const unreadCount = marketplaceData.notifications.filter(n => !n.read).length;
     document.getElementById('notification-count').textContent = unreadCount > 0 ? unreadCount : '';
@@ -424,7 +420,6 @@ function renderNotifications() {
     `).join('');
 }
 
-// Render cart
 function renderCart() {
     const cartTotal = marketplaceData.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
@@ -460,7 +455,6 @@ function renderCart() {
     }
 }
 
-// Show toast notification
 function showToast(message, duration = 3000) {
     elements.toast.textContent = message;
     elements.toast.classList.add('show');
@@ -470,7 +464,6 @@ function showToast(message, duration = 3000) {
     }, duration);
 }
 
-// Initialize all event listeners
 function initEventListeners() {
     // Chat widget toggle
     const chatWidget = document.getElementById('chat-widget');
@@ -490,7 +483,7 @@ function initEventListeners() {
         openChat.classList.toggle('hidden');
     });
 
-    // Send message functionality
+   
     sendMessage.addEventListener('click', sendChatMessage);
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -514,13 +507,11 @@ function initEventListeners() {
             `;
             chatMessages.appendChild(userMessageDiv);
 
-            // Clear input
             chatInput.value = '';
 
-            // Scroll to bottom
+     
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Simulate reply after 1 second
             setTimeout(() => {
                 const replyDiv = document.createElement('div');
                 replyDiv.className = 'mb-4';
@@ -536,7 +527,6 @@ function initEventListeners() {
         }
     }
 
-    // Back to top button
     const backToTop = document.getElementById('back-to-top');
 
     window.addEventListener('scroll', () => {
@@ -551,7 +541,7 @@ function initEventListeners() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Wishlist buttons
+  
     document.addEventListener('click', function (e) {
         if (e.target.closest('.wishlist-btn') || e.target.classList.contains('wishlist-btn')) {
             const btn = e.target.classList.contains('wishlist-btn') ? e.target : e.target.closest('.wishlist-btn');
@@ -570,7 +560,7 @@ function initEventListeners() {
         }
     });
 
-    // Add to cart buttons
+ 
     document.addEventListener('click', function (e) {
         if (e.target.closest('.add-to-cart-btn') || e.target.classList.contains('add-to-cart-btn')) {
             const btn = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.closest('.add-to-cart-btn');
@@ -581,7 +571,6 @@ function initEventListeners() {
             e.preventDefault();
             e.stopPropagation();
 
-            // Check if product is already in cart
             const existingItem = marketplaceData.cartItems.find(item => item.id === productId);
 
             if (existingItem) {
@@ -598,7 +587,6 @@ function initEventListeners() {
 
             renderCart();
 
-            // Visual feedback
             btn.textContent = 'Added!';
             btn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
             btn.classList.add('bg-green-600', 'hover:bg-green-700');
@@ -613,7 +601,7 @@ function initEventListeners() {
         }
     });
 
-    // Cart quantity buttons
+
     document.addEventListener('click', function (e) {
         if (e.target.closest('.quantity-btn') || e.target.classList.contains('quantity-btn')) {
             const btn = e.target.classList.contains('quantity-btn') ? e.target : e.target.closest('.quantity-btn');
@@ -632,7 +620,7 @@ function initEventListeners() {
         }
     });
 
-    // Remove item from cart
+   
     document.addEventListener('click', function (e) {
         if (e.target.closest('.remove-item-btn') || e.target.classList.contains('remove-item-btn')) {
             const btn = e.target.classList.contains('remove-item-btn') ? e.target : e.target.closest('.remove-item-btn');
@@ -647,15 +635,14 @@ function initEventListeners() {
         }
     });
 
-    // Profile button redirect
+   
     const profileBtn = document.getElementById('profile-btn');
     profileBtn.addEventListener('click', () => {
-        // In a real app, this would redirect to profile page
+
         showToast('Redirecting to profile page');
         // window.location.href = 'dashboard.html';
     });
 
-    // Search functionality
     const searchDesktop = document.getElementById('search-desktop');
     const searchMobile = document.getElementById('search-mobile');
 
@@ -671,8 +658,6 @@ function initEventListeners() {
 
     searchDesktop.addEventListener('keypress', handleSearch);
     searchMobile.addEventListener('keypress', handleSearch);
-
-    // Sell item button
     const sellItemBtn = document.getElementById('sell-item-btn');
     sellItemBtn.addEventListener('click', () => {
         showToast('Redirecting to sell item page');
@@ -685,26 +670,26 @@ function initEventListeners() {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    // Show modal (for demo purposes, you can trigger this when user tries to perform an action that requires login)
+   
     function showModal() {
         authModal.style.display = 'block';
     }
 
-    // Close modal
+  
     closeModal.addEventListener('click', () => {
         authModal.style.display = 'none';
     });
 
-    // Tab switching
+    
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.getAttribute('data-tab');
 
-            // Update active tab button
+            
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // Update active tab content
+            
             tabContents.forEach(content => {
                 content.classList.remove('active');
                 if (content.id === tabId) {
@@ -714,26 +699,26 @@ function initEventListeners() {
         });
     });
 
-    // Close modal when clicking outside
+   
     window.addEventListener('click', (event) => {
         if (event.target === authModal) {
             authModal.style.display = 'none';
         }
     });
 
-    // Form submissions
+    
     document.getElementById('login-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        // Show loading state
+       
         document.getElementById('login-text').classList.add('hidden');
         document.getElementById('login-spinner').classList.remove('hidden');
 
-        // Simulate API call
+       
         setTimeout(() => {
-            // Hide loading state
+           
             document.getElementById('login-text').classList.remove('hidden');
             document.getElementById('login-spinner').classList.add('hidden');
 
@@ -754,13 +739,13 @@ function initEventListeners() {
         const confirm = document.getElementById('signup-confirm').value;
         const id = document.getElementById('signup-id').value;
 
-        // Show loading state
+       
         document.getElementById('signup-text').classList.add('hidden');
         document.getElementById('signup-spinner').classList.remove('hidden');
 
-        // Simulate API call
+        
         setTimeout(() => {
-            // Hide loading state
+          
             document.getElementById('signup-text').classList.remove('hidden');
             document.getElementById('signup-spinner').classList.add('hidden');
 
@@ -777,7 +762,7 @@ function initEventListeners() {
         }, 1500);
     });
 
-    // Social login buttons
+    
     document.getElementById('google-login').addEventListener('click', () => {
         showToast('Redirecting to Google login');
     });
@@ -786,7 +771,7 @@ function initEventListeners() {
         showToast('Redirecting to Microsoft login');
     });
 
-    // Campus services buttons
+    
     document.getElementById('find-tutors-btn').addEventListener('click', () => {
         showToast('Finding available tutors...');
     });
@@ -803,7 +788,7 @@ function initEventListeners() {
         showToast('Calculating printing quote...');
     });
 
-    // Join group buttons
+    
     document.addEventListener('click', function (e) {
         if (e.target.closest('.join-group-btn') || e.target.classList.contains('join-group-btn')) {
             const btn = e.target.classList.contains('join-group-btn') ? e.target : e.target.closest('.join-group-btn');
@@ -815,7 +800,7 @@ function initEventListeners() {
         }
     });
 
-    // Category chips
+    
     document.addEventListener('click', function (e) {
         if (e.target.closest('[data-category]') || e.target.hasAttribute('data-category')) {
             const chip = e.target.hasAttribute('data-category') ? e.target : e.target.closest('[data-category]');
@@ -827,7 +812,7 @@ function initEventListeners() {
         }
     });
 
-    // Footer links
+   
     document.getElementById('home-link').addEventListener('click', (e) => {
         e.preventDefault();
         showToast('Going to homepage');
@@ -890,7 +875,7 @@ function initEventListeners() {
         showToast('Opening LinkedIn page');
     });
 
-    // Notification dropdown
+    
     const notificationsBtn = document.getElementById('notifications-btn');
     const notificationsDropdown = document.getElementById('notifications-dropdown');
 
@@ -898,22 +883,21 @@ function initEventListeners() {
         e.stopPropagation();
         notificationsDropdown.classList.toggle('hidden');
 
-        // Mark all notifications as read when dropdown is opened
+        
         marketplaceData.notifications.forEach(n => n.read = true);
         renderNotifications();
     });
 
-    // Close dropdown when clicking outside
+    
     document.addEventListener('click', () => {
         notificationsDropdown.classList.add('hidden');
     });
 
-    // Prevent dropdown from closing when clicking inside
+    
     notificationsDropdown.addEventListener('click', (e) => {
         e.stopPropagation();
     });
 
-    // Cart dropdown
     const cartBtn = document.getElementById('cart-btn');
     const cartDropdown = document.getElementById('cart-dropdown');
 
@@ -922,17 +906,17 @@ function initEventListeners() {
         cartDropdown.classList.toggle('hidden');
     });
 
-    // Close dropdown when clicking outside
+    
     document.addEventListener('click', () => {
         cartDropdown.classList.add('hidden');
     });
 
-    // Prevent dropdown from closing when clicking inside
+    
     cartDropdown.addEventListener('click', (e) => {
         e.stopPropagation();
     });
 
-    // Close announcement bar
+    
     document.getElementById('close-announcement').addEventListener('click', (e) => {
         e.target.closest('div').style.display = 'none';
     });
