@@ -922,5 +922,20 @@ function initEventListeners() {
     });
 }
 
+//making for cart func
+ function addToCart(name, price) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push({ name, price });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Added to Cart!");
+        }
+
+        function addToWishlist(name, price) {
+            let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            wishlist.push({ name, price });
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            alert("Added to Wishlist!");
+        }
+
 
 
