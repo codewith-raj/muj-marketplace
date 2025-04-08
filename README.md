@@ -9,10 +9,6 @@ Welcome to **MUJ-MARKETPLACE** — a student-centric online marketplace designed
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Setup Instructions](#-setup-instructions)
-- [Screenshots](#-screenshots)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
 
 ---
 
